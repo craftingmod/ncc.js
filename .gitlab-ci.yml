@@ -7,6 +7,7 @@ before_script:
    - apt-get update -qq && apt-get install
 stages:
   - build
+  - deploy
 Build Library:
   stage: build
   tags:
@@ -16,4 +17,10 @@ Build Library:
    - yarn config set cache-folder .yarn
    - yarn install
   script:
-    - npm run build:module
+    - npm run build
+Deploy Builded:
+  stage: deploy
+  artifacts:
+    paths:
+    - build
+    expire_in: 1 week
