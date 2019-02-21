@@ -2,14 +2,14 @@
   "name": "ncc.js",
   "version": "0.1.0",
   "description": "Naver Cafe Chat(ncc) Library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "run-p build:*",
     "build:main": "trash build && tsc -p tsconfig.json",
-    "build:module": "trash dist && tsc -p tsconfig.dist.json",
-    "clean": "trash build dist",
-    "start": "node build/index.js"
+    "clean": "trash build test",
+    "start": "node build/index.js",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
