@@ -7,7 +7,6 @@ before_script:
    - apt-get update -qq && apt-get install
 stages:
   - build
-  - deploy
 Build Library:
   stage: build
   tags:
@@ -18,8 +17,6 @@ Build Library:
    - yarn install
   script:
     - npm run build
-Deploy Builded:
-  stage: deploy
   artifacts:
     paths:
     - build
