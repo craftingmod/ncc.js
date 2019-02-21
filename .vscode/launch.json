@@ -15,7 +15,7 @@
         "<node_internals>/**/*.js",
         "${workspaceFolder}/node_modules/**/*.js"
       ],
-      "preLaunchTask": "npm: build",
+      "preLaunchTask": "npm: build:main",
       "stopOnEntry": true,
       "smartStep": true,
       "runtimeArgs": ["--nolazy"],
@@ -24,7 +24,7 @@
         "CLOG_ORIGIN": "true",
         // "EMOJI_WIDTH": "1"
       },
-      "console": "externalTerminal"
+      "console": "integratedTerminal"
     },
     {
       "type": "node",
