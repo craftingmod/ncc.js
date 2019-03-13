@@ -71,30 +71,30 @@ export const intervalNormal = 30000
 export const intervalError = 10000
 
 export const videoOpt = {
-    "visible":{
-       "fullscreen":true,
-       "logo":true,
-       "playbackRate":false,
-       "scrap":true,
-       "playCount":true,
-       "commentCount":true,
-       "title":true,
-       "writer":true,
-       "expand":false,
-       "subtitles":true,
-       "thumbnails":true,
-       "quality":true,
-       "setting":true,
-       "script":false,
-       "logoDimmed":true,
-       "badge":true,
-       "seekingTime":true,
-       "linkCount":true,
-       "createTime":true,
-       "thumbnail":true
+    visible:{
+       fullscreen:true,
+       logo:true,
+       playbackRate:false,
+       scrap:true,
+       playCount:true,
+       commentCount:true,
+       title:true,
+       writer:true,
+       expand:false,
+       subtitles:true,
+       thumbnails:true,
+       quality:true,
+       setting:true,
+       script:false,
+       logoDimmed:true,
+       badge:true,
+       seekingTime:true,
+       linkCount:true,
+       createTime:true,
+       thumbnail:true,
     },
-    "clicked":{
-       "expand":false,
-       "subtitles":false
-    }
+    clicked:{
+       expand:false,
+       subtitles:false,
+    },
 }

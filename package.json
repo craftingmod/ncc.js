@@ -1,6 +1,6 @@
 {
   "name": "ncc.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Naver Cafe Chat(ncc) Library",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://gitlab.com/craftingmod/ncc.js.git"
   },
-  "keywords": [],
+  "keywords": ["ncc", "naver"],
   "author": "Craftingmod",
   "license": "MIT",
   "bugs": {

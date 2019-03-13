@@ -62,7 +62,7 @@ export default class NCaptcha {
     public key:string
     /**
      * Captcha value
-     * 
+     *
      * Need typing
      */
     public value:string

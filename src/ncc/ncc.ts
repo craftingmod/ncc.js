@@ -6,8 +6,8 @@ import Log from "../log"
 import { bindFn, TimerID, WebpackTimer } from "../webpacktimer"
 import NCredit from "./credit/ncredit"
 import NCaptcha from "./ncaptcha"
-import { CAFE_DEFAULT_IMAGE, CHAT_BACKEND_URL, 
-    CHAT_HOME_URL, CHAT_SOCKET_IO, CHATAPI_BLOCKLIST_CAFE, 
+import { CAFE_DEFAULT_IMAGE, CHAT_BACKEND_URL,
+    CHAT_HOME_URL, CHAT_SOCKET_IO, CHATAPI_BLOCKLIST_CAFE,
     CHATAPI_CAFE_BLOCK, CHATAPI_CAFES, CHATAPI_CHANNEL_CREATE,
     CHATAPI_CHANNEL_CREATE_PERM, CHATAPI_CHANNEL_JOIN, CHATAPI_CHANNEL_OPENCREATE,
     CHATAPI_CHANNELS, CHATAPI_OPENCHAT_LIST, CHATAPI_USER_BLOCK,
@@ -55,7 +55,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Fetch current channels
-     * 
+     *
      * This does NOT modify current memory
      */
     public async fetchChannels() {
@@ -78,8 +78,8 @@ export default class Ncc extends NcFetch {
      * @param captcha Captcha (generated, **GroupChat**)
      */
     public async createChannel(cafe:Cafe | number, members:Array<Profile | string>,
-        info:ChannelInfo = {name: "채팅방", description:"채팅방이다.", thumbnails: []},
-        type = ChannelType.OnetoOne, captcha:NCaptcha = null) {
+                               info:ChannelInfo = {name: "채팅방", description:"채팅방이다.", thumbnails: []},
+                               type = ChannelType.OnetoOne, captcha:NCaptcha = null) {
         const cafeid = typeof cafe === "number" ? cafe : cafe.cafeId
         cafe = cafeid
         const memberids:string[] = []
@@ -99,7 +99,7 @@ export default class Ncc extends NcFetch {
                 const arr = get(obj, "createChannelPrivilegeList", {default:[]}) as object[]
                 return arr.map((v) => ({
                     channelType: v["channelType"] as number,
-                    creatable: v["creatable"] as boolean
+                    creatable: v["creatable"] as boolean,
                 })).filter((v) => v.channelType === type)
         })
         if (!privilege.valid || privilege.result.length <= 0 || !privilege.result[0].creatable) {
@@ -110,23 +110,23 @@ export default class Ncc extends NcFetch {
         }
         const url = type === ChannelType.OpenGroup ? CHATAPI_CHANNEL_OPENCREATE : CHATAPI_CHANNEL_CREATE
         const captchaParam = {
-            "captchaKey": captcha == null ? null : captcha.key,
-            "captchaValue": captcha == null ? null : captcha.value,
+            captchaKey: captcha == null ? null : captcha.key,
+            captchaValue: captcha == null ? null : captcha.value,
         }
         let param
         if (type !== ChannelType.OpenGroup) {
             param = {
                 ...captchaParam,
-                "channelTypeCode": type,
-                "userIdList": memberids,
+                channelTypeCode: type,
+                userIdList: memberids,
             }
         } else {
             const m = info as ChannelInfo
             param = {
                 ...captchaParam,
-                "name": m.name,
-                "description": m.description,
-                "profileImageUrl": m.thumbnails,
+                name: m.name,
+                description: m.description,
+                profileImageUrl: m.thumbnails,
             }
         }
         const request = await this.credit.reqPost(url.get(cafeid), {}, param).catch((err) => {Log.e(err); return null})
@@ -135,7 +135,7 @@ export default class Ncc extends NcFetch {
             depthS = "channel." + depthS
         }
         const response = new NcJson(request, (obj) => ({
-            channelID: get(obj, depthS)
+            channelID: get(obj, depthS),
         }))
         await this.syncChannels()
         if (!response.valid) {
@@ -153,7 +153,7 @@ export default class Ncc extends NcFetch {
      * @param image Image URL (external is ok.)
      */
     public async createOpenChannel(cafe:Cafe | number,captcha:NCaptcha,
-        name:string, description:string = "", image?:string) {
+                                   name:string, description:string = "", image?:string) {
         return this.createChannel(cafe, [], {
             name: name == null ? "null" : name,
             description,
@@ -162,7 +162,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Join channel
-     * @param channelID channel id 
+     * @param channelID channel id
      */
     public async joinChannel(channelID:NcBaseChannel | number) {
         if (typeof channelID !== "number") {
@@ -223,7 +223,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Toggle CafeChat usable
-     * 
+     *
      * If cafe is unusable chat, just return success code.
      * @param cafe Cafe
      * @param type Group or 1:1
@@ -246,7 +246,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Get blockable (anyway useable) cafes
-     * 
+     *
      * Check: result.blockCafe
      * @param type Group or 1:1
      * @param cafe Cafe (not provided, return all)
@@ -256,7 +256,7 @@ export default class Ncc extends NcFetch {
         const cafeid = typeof cafe === "number" ? cafe : cafe.cafeId
         const blockables = new NcJson<CafePermInfo[]>(
             await this.credit.reqGet(CHATAPI_BLOCKLIST_CAFE, { type }),
-            (obj) => obj["blockingMyCafeList"].map((v) => v as CafePermInfo)
+            (obj) => obj["blockingMyCafeList"].map((v) => v as CafePermInfo),
         )
         if (blockables.valid) {
             return Promise.reject(NcAPIStatus.from(blockables))
@@ -282,7 +282,7 @@ export default class Ncc extends NcFetch {
             })
             const response = new NcJson(request, (obj) => ({
                 more: obj["more"],
-                channels: (obj["joinableOpenChannelList"] as any[]).map((v) => parseFromOpen(v))
+                channels: (obj["joinableOpenChannelList"] as any[]).map((v) => parseFromOpen(v)),
             }))
             if (!response.valid) {
                 return NcAPIStatus.from(response)
@@ -297,7 +297,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Get joinedChannel from ID
-     * 
+     *
      * Not connected chat!
      * @param channelID Channel ID
      */
@@ -319,7 +319,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Get Connected Channel from id
-     * 
+     *
      * Return null if not found / cannot join
      * @param channel Channel
      */
@@ -341,7 +341,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Fetch channels and start auto sync
-     * @param autoUpdate 
+     * @param autoUpdate
      */
     public async connect(autoUpdate = true) {
         if (!await this.availableAsync()) {
@@ -368,7 +368,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Clear connected and joined channels (Cache)
-     * 
+     *
      * This doesn't effect on naver ID
      */
     public clearChannels() {
@@ -381,7 +381,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Destory Ncc
-     * 
+     *
      * Unusable this object if call.
      */
     public destory() {
@@ -498,7 +498,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Test channel..
-     * @param channel what? 
+     * @param channel what?
      */
     public async testChannel(channel:number | NcBaseChannel) {
         if (typeof channel !== "number") {
@@ -523,7 +523,7 @@ export default class Ncc extends NcFetch {
         })
         // room name changed
         test.on(test.events.onRoomnameChanged, (ch, name) => {
-            Log.d("Changed room", "Before: " + name.before + 
+            Log.d("Changed room", "Before: " + name.before +
                 " After: " + name.after + " Sender: " + name.modifier.nickname)
         })
         // master changed
@@ -548,7 +548,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Register event
-     * @param dispatcher this.events 
+     * @param dispatcher this.events
      * @param handler function
      */
     protected onPrivate<V>(dispatcher:SimpleEventDispatcher<V>, handler:ISimpleEventHandler<V>) {
@@ -574,7 +574,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Check channel should be keep connected
-     * @param channel 
+     * @param channel
      */
     protected shouldConnected(channel:NcJoinedChannel) {
         const lastDate = channel.latestMessage.id == null ? channel.createdAt : channel.latestMessage.timestamp
@@ -641,7 +641,7 @@ export default class Ncc extends NcFetch {
     }
     /**
      * Add Connect channel to array
-     * 
+     *
      * also registers event
      * @param _ch Channel or id
      */
