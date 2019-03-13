@@ -1,4 +1,5 @@
 import get from "get-value"
+import "socket.io-client"
 import io from "socket.io-client"
 import { EventDispatcher, IEventHandler } from "strongly-typed-events"
 import Log from "../../log"
@@ -31,8 +32,8 @@ const urlRegex = /(http(s)?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a
 export default class NcChannel {
     /**
      * Parse NcChannel from..
-     * @param credit 
-     * @param id 
+     * @param credit
+     * @param id
      */
     public static async from(credit:NCredit, id:number | NcBaseChannel) {
         id = (typeof id === "number") ? id : id.channelID
@@ -57,7 +58,7 @@ export default class NcChannel {
         return new Proxy(this.instance, {
             set() {
                 return false
-            }
+            },
         })
     }
     /**
@@ -70,7 +71,7 @@ export default class NcChannel {
     public session:SocketIOClient.Socket
     /**
      * Fetched messages
-     * 
+     *
      * Order: [0] *Recent* -> *Old* [length]
      */
     public messages:NcMessage[] = []
@@ -195,7 +196,7 @@ export default class NcChannel {
     /************************** Events *******************************/
     /**
      * Register event
-     * @param dispatcher this.events 
+     * @param dispatcher this.events
      * @param handler function
      * @returns unsubscribe function
      */
@@ -331,7 +332,7 @@ export default class NcChannel {
                         message,
                         modifier: serialMsg.modifier,
                     } as RoomName)
-                } break
+                }                                 break
                 case SystemType.changed_Master: {
                     this.events.onMasterChanged.dispatchAsync(this, {
                         newMasterNick: serialMsg.actionDest,
@@ -340,14 +341,14 @@ export default class NcChannel {
                         message,
                         modifier: serialMsg.modifier,
                     } as Master)
-                } break
+                }                               break
                 case SystemType.kick: {
                     this.events.onKicked.dispatchAsync(this, {
                         channelID: this.channelID,
                         message,
                         modifier: serialMsg.modifier,
                     } as SysMsg)
-                } break
+                }                     break
             }
         })
         // blind event
@@ -395,7 +396,7 @@ export default class NcChannel {
     }
     /**
      * Invite Users.
-     * 
+     *
      * Almost no require captcha.
      * @param users To invite Users
      * @param captcha Captcha (optical)
@@ -412,7 +413,7 @@ export default class NcChannel {
     }
     /**
      * Ban user :p
-     * 
+     *
      * Permission: Owner | Staff
      * @param user userid
      */
@@ -424,7 +425,7 @@ export default class NcChannel {
     }
     /**
      * Leave Channel (No way to destroy channel :p)
-     * 
+     *
      * Permission: *
      */
     public async leave() {
@@ -433,7 +434,7 @@ export default class NcChannel {
     }
     /**
      * Destory Channel (OpenChat- Complely REMOVE)
-     * 
+     *
      * Permission: Owner
      */
     public async destroy() {
@@ -458,12 +459,12 @@ export default class NcChannel {
         }
         const r = response.result
         return {
-            ...r.summary
+            ...r.summary,
         } as NcEmbed
     }
     /**
      * Send text to this channel
-     * 
+     *
      * AutoEmbed is soooo slow
      * @param text Send text
      * @param autoEmbed Detect link and parse embed?
@@ -478,9 +479,9 @@ export default class NcChannel {
     }
     /**
      * Send text with secret extra
-     * 
+     *
      * Maybe fun.
-     * @param text Send Text 
+     * @param text Send Text
      * @param extra Raw Extra data.
      */
     public async sendTextWithExtra(text:string, extra:object) {
@@ -498,7 +499,7 @@ export default class NcChannel {
     }
     /**
      * Send text with custom embed
-     * 
+     *
      * How about XSS-Atack?
      * @param content Send text (in green chat)
      * @param embed NcEmbed Object
@@ -548,7 +549,7 @@ export default class NcChannel {
     }
     /**
      * Send anycast system message
-     * 
+     *
      * It isn't official api.
      * @param text Send Text
      */
@@ -561,7 +562,7 @@ export default class NcChannel {
     }
     /**
      * Send TvCast Type message
-     * 
+     *
      * @description I don't know why it exists. *Naver?*
      * @param cast NcTvCast json
      */
@@ -608,7 +609,7 @@ export default class NcChannel {
     }
     /**
      * Set message expires day
-     * 
+     *
      * Permission: Owner | Staff | User?
      * @param day Day (0: 3~4 / 30: 30 days / 365: 1 year)
      */
@@ -619,15 +620,15 @@ export default class NcChannel {
             case 365: code = 3; break
             default: code = 0
         }
-        const request = await this.credit.req("PUT", CHATAPI_CHANNEL_PERIOD.get(this.channelID), {}, {"period": code})
+        const request = await this.credit.req("PUT", CHATAPI_CHANNEL_PERIOD.get(this.channelID), {}, {period: code})
         await this.syncChannel()
         return NcAPIStatus.handleSuccess(request)
     }
     /**
      * Blind / Show special message
-     * 
+     *
      * Check `this.blindable` first
-     * 
+     *
      * Permission: Owner | Staff
      * @param msg to hide message
      * @param show show message?
@@ -636,7 +637,7 @@ export default class NcChannel {
         const id = typeof msg === "number" ? msg : msg.id
         const request = await this.credit.req(
             show ? "DELETE" : "POST", CHATAPI_CHANNEL_BLIND.get(this.channelID, id), {
-            "categoryId": this.cafe.cafeId,
+            categoryId: this.cafe.cafeId,
         })
         return NcAPIStatus.handleSuccess(request)
     }
@@ -653,7 +654,7 @@ export default class NcChannel {
     /**
      * Show special message
      * (Check `this.blindable` first)
-     * 
+     *
      * Permission: *Owner* | *Staff*
      * @param msg Blinded message
      */
@@ -662,7 +663,7 @@ export default class NcChannel {
     }
     /**
      * Change owner to user
-     * 
+     *
      * Permission: Owner | Staff
      * @param user User
      */
@@ -674,7 +675,7 @@ export default class NcChannel {
     }
     /**
      * Change Info
-     * 
+     *
      * Permission: Owner | Staff
      * @param text Name, Description (input null if you don't want to change)
      * @param image Image(s), Multiple image.. is experimental
@@ -691,9 +692,9 @@ export default class NcChannel {
             org.thumbnails = image
         }
         const request = await this.credit.req("PUT", CHATAPI_CHANNEL_INFO.get(this.channelID), {}, {
-            "profileImageUrl": org.thumbnails,
-            "name": org.name,
-            "description": org.description,
+            profileImageUrl: org.thumbnails,
+            name: org.name,
+            description: org.description,
         })
         await this.syncChannel()
         return NcAPIStatus.handleSuccess(request)
@@ -745,14 +746,14 @@ export default class NcChannel {
     }
     /**
      * Get Messages from `start` to `end`
-     * 
+     *
      * Order: [0] *New* -> *Old* [length]
-     * @param start 
-     * @param end 
-     * @param checker 
+     * @param start
+     * @param end
+     * @param checker
      */
     public async fetchMessages(start:number, end:number,
-        checker?:(msg:NcMessage, arr:NcMessage[]) => MessageCheck) {
+                               checker?:(msg:NcMessage, arr:NcMessage[]) => MessageCheck) {
         // always start < end
         if (start > end) {
             const _mv = start
@@ -838,7 +839,7 @@ export default class NcChannel {
     }
     /**
      * Connect session.
-     * @param credit 
+     * @param credit
      */
     public async connect() {
         const channel = this.channelID
@@ -857,14 +858,14 @@ export default class NcChannel {
             transportOptions: {
                 polling: {
                     extraHeaders: {
-                        "Origin": CHAT_HOME_URL,
-                        "Referer": CHAT_CHANNEL_URL.get(channel),
+                        Origin: CHAT_HOME_URL,
+                        Referer: CHAT_CHANNEL_URL.get(channel),
                     },
                 },
                 websocket: {
                     extraHeaders: {
-                        "Origin": CHAT_HOME_URL,
-                        "Referer": CHAT_CHANNEL_URL.get(channel),
+                        Origin: CHAT_HOME_URL,
+                        Referer: CHAT_CHANNEL_URL.get(channel),
                     },
                 },
             },
@@ -917,7 +918,7 @@ export default class NcChannel {
     }
     /**
      * Disconnect Channel
-     * 
+     *
      * **Credit also be invalid!!**
      */
     public disconnect() {
@@ -938,7 +939,7 @@ export default class NcChannel {
         }
         this.credit = null
     }
-    protected async socketEmit(type:string, ...send:Array<unknown>) {
+    protected async socketEmit(type:string, ...send:unknown[]) {
         const obj = {
             success: false,
             code: null as string,
@@ -1072,13 +1073,13 @@ class Events {
     public onKicked = new EventDispatcher<NcChannel, SysMsg>()
     /**
      * on Past Messages are parsed.
-     * 
+     *
      * Order: older -> newer (messageNo order.)
      */
     public onPastMessage = new EventDispatcher<NcChannel, NcMessage[]>()
     /**
      * on Message have been blinded
-     * 
+     *
      * Number when there's no message matched `id` in cache, else NcMessage
      */
     public onBlindMessage = new EventDispatcher<NcChannel, NcMessage | {id:number, hidden:boolean}>()

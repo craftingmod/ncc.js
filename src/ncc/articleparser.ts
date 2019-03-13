@@ -1,4 +1,4 @@
-import Cheerio from "cheerio"
+import "cheerio"
 import colorString from "color-string"
 import Entities from "html-entities"
 import pretty from "pretty"
@@ -18,13 +18,13 @@ import NaverVideo from "./structure/navervideo"
 
 /**
  * Semi-transparent char
- * 
+ *
  * Works in nickname, but showing char in sublime
  */
 const blankChar = "\u{17B5}"
 /**
  * Fully-transparent char
- * 
+ *
  * Does not work in nickname.
  */
 const blankChar2 = "\u{FFF5}"
@@ -59,11 +59,11 @@ const defaultStyles:DeepReadonly<{textStyle:TextStyle, generalStyle:GeneralStyle
     imageStyle: {
         viewWidth: -1,
         viewHeight: -1,
-    }
+    },
 }
 /**
  * I like static class
- * 
+ *
  * Article Function Maker
  */
 export class ArticleParser {
@@ -108,7 +108,7 @@ export class ArticleParser {
             const content = contents[i]
             let lastContent:ArticleContent = null
             if (i >= 1) {
-                lastContent = contents[i - 1]               
+                lastContent = contents[i - 1]
             }
             // in table, we should use br. (yeah, there's no way without html.)
             let linesep:string = "\n"
@@ -223,8 +223,8 @@ export class ArticleParser {
                 const videoLink = `[${title} - ${authorNick}](${link})`
                 if (markType === MarkType.GITHUB && !inTable) {
                     out += `
-| ${videoLink.replace(/\|/ig, "")} |  
-| -------------- |  
+| ${videoLink.replace(/\|/ig, "")} |
+| -------------- |
 | [![preview](${previewImg})](${link}) |  \n`
                 } else {
                     out += videoLink
@@ -261,7 +261,7 @@ export class ArticleParser {
                                     }
                                 }
                             }
-                            if (lastContent != null && lastContent.type === "table" 
+                            if (lastContent != null && lastContent.type === "table"
                                 && (lastContent as ArticleContent<TableType>).info.isHead) {
                                 // skip when header is before.
                             } else {
@@ -269,20 +269,20 @@ export class ArticleParser {
                             }
                             out += `${tableHead2}\n`
                         }
-                    } break
+                    }                               break
                     case TableSeperator.tableEnd: {
                         out += `\n`
                         inTable = false
-                    } break
+                    }                             break
                     case TableSeperator.rowStart: {
                         out += "| "
-                    } break
+                    }                             break
                     case TableSeperator.rowNext: {
                         out += " | "
-                    } break
+                    }                            break
                     case TableSeperator.rowEnd: {
                         out += ` |\n`
-                    } break
+                    }                           break
                 }
             }
             lastContent = content
@@ -347,7 +347,7 @@ export class ArticleParser {
                     }
                     const merge = (str1:string, str2:string) => {
                         return str2 == null ? null : str1 + str2
-                    }             
+                    }
                     const strKey:Array<string | null> = [info.textColor, info.fontName,
                         info.size >= 0 ? info.size + "px" : null, info.backgroundColor]
                     const strValue:string[] = ["c", "f", "i", "k"]
@@ -363,22 +363,22 @@ export class ArticleParser {
                     }
                     styleTags.push(e(content.data))
                     return `<F${styleTags.join("/")}>`
-                } break
+                }            break
                 case "newline": {
                     return `<N/>`
-                } break
+                }               break
                 case "image": {
                     const content = _content as ArticleContent<ImageType>
                     return `<Iu${e(content.info.src)}/zw${content.info.width}/zh${content.info.height}>`
-                } break
+                }             break
                 case "nvideo": {
                     const content = _content as ArticleContent<NaverVideo>
                     return `<Yu${e(content.info.share)}/${e(content.info.title)}>`
-                } break
+                }              break
                 case "youtube": {
                     const content = _content as ArticleContent<ytdl.videoInfo>
                     return `<Yu${e(content.info.video_url)}/${e(content.info.title)}>`
-                } break
+                }               break
             }
             return ""
         }).filter((v) => v.length >= 1)
@@ -394,7 +394,7 @@ export class ArticleParser {
                     }
                 } break
                 case "newline": {
-                    
+
                 }
             }
         }
@@ -409,7 +409,7 @@ export class ArticleParser {
         for (const element of els) {
             /**
              * set TextStyle from tag/attrStyle.
-             * 
+             *
              * @todo make process before recursiving
              */
             const url = element.attribs != null ? element.attribs["href"] : null
@@ -441,7 +441,7 @@ export class ArticleParser {
             }
             /**
              * Two
-             * 
+             *
              * Push Contents to array
              */
             // parse style
@@ -511,7 +511,7 @@ export class ArticleParser {
                             style: {
                                 ...style,
                                 url: linkInfo.url,
-                            }
+                            },
                         } as ArticleContent<ImageType>)
                     }
                     contents.push({
@@ -523,7 +523,7 @@ export class ArticleParser {
                         style: {
                             ...style,
                             url: linkInfo.url,
-                        }
+                        },
                     } as ArticleContent<TextType>, contentAsLS(style))
                 } else {
                     throw new Error("No implement breaking!")
@@ -540,11 +540,11 @@ export class ArticleParser {
                     case "br": {
                         // newline
                         contents.push(contentAsLS(style))
-                    } break
+                    }          break
                     case "img": {
                         // image
                         contents.push(contentAsImage(element, style))
-                    } break
+                    }           break
                     case "embed":
                     case "iframe": {
                         // iframe/embed start
@@ -619,7 +619,7 @@ export class ArticleParser {
                 // remove empty rowNext for beauty table.
                 if (contents.length >= 1) {
                     const lastCon = contents[contents.length - 1]
-                    if (lastCon.type === "table" && 
+                    if (lastCon.type === "table" &&
                         (lastCon as ArticleContent<TableType>).info.seperator === TableSeperator.rowNext) {
                         contents.pop()
                     }
@@ -651,7 +651,7 @@ export class ArticleParser {
  * @param param Parameters.
  */
 function setStyler(param:{
-    style:DeepReadonly<MergeStyle>, tagName:string, enable:boolean, url:string, attrStyle:string
+    style:DeepReadonly<MergeStyle>, tagName:string, enable:boolean, url:string, attrStyle:string,
 }):MergeStyle {
     const { tagName, enable, url, attrStyle } = param
     // break immutable for style.
@@ -662,24 +662,24 @@ function setStyler(param:{
     switch (tagName.toLowerCase()) {
         case "b": {
             style.bold = enable
-        } break
+        }         break
         case "u": {
             style.underline = enable
-        } break
+        }         break
         case "i": {
             style.italic = enable
-        } break
+        }         break
         case "strike":
         case "s": {
             style.namu = enable
-        } break
+        }         break
         case "a": {
             if (url != null && enable) {
                 style.url = url
             } else {
                 style.url = null
             }
-        } break
+        }         break
         case "h1":
         case "h2":
         case "h3":
@@ -698,7 +698,7 @@ function setStyler(param:{
             style.isTitle = enable
             Log.d("ParentSize", style.size + "")
             Log.d("TitleSize", titleSize + "")
-        } break
+        }          break
     }
     // if not modify element
     if (attrStyle != null) {
@@ -855,8 +855,8 @@ function sizeAsPx(str:string, parentSize?:number) {
  * Parse Image from <img> html
  * @param el Cheerio Element (img tag)
  */
-function contentAsImage(el:CheerioElement, 
-    _style:DeepReadonly<GeneralStyle & ImageStyle> | (GeneralStyle & ImageStyle)):ArticleContent<ImageType> {
+function contentAsImage(el:CheerioElement,
+                        _style:DeepReadonly<GeneralStyle & ImageStyle> | (GeneralStyle & ImageStyle)):ArticleContent<ImageType> {
     // image
     let width:number = -1
     let height:number = -1
@@ -923,8 +923,8 @@ function contentAsLS(
  * @param content Content of text
  * @param style Text Style
  */
-function contentAsText(content:string, 
-    style:DeepReadonly<TextStyle & GeneralStyle> | (TextStyle & GeneralStyle)):ArticleContent<TextType> {
+function contentAsText(content:string,
+                       style:DeepReadonly<TextStyle & GeneralStyle> | (TextStyle & GeneralStyle)):ArticleContent<TextType> {
     return {
         type: "text",
         data: content,
@@ -938,7 +938,7 @@ function contentAsText(content:string,
  * @param style General Style
  */
 function contentAsTableInfo(tableInfo:TableSeperator, isHead:boolean,
-    style:DeepReadonly<GeneralStyle> | GeneralStyle):ArticleContent<TableType> {
+                            style:DeepReadonly<GeneralStyle> | GeneralStyle):ArticleContent<TableType> {
     return {
         type: "table",
         data: "",
